@@ -1,4 +1,4 @@
-package com.example.backend;
+package fr.eni.bookhubbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
