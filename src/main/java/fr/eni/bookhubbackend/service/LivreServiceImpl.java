@@ -34,4 +34,44 @@ public class LivreServiceImpl implements LivreService {
 
         return livreMapper.toDTO(livre);
     }
-}
+
+    @Override
+    public LivreDTO create(LivreDTO dto) {
+        Livre livre = livreMapper.toEntity(dto);
+
+        Livre saved = livreRepository.save(livre);
+
+        return livreMapper.toDTO(saved);
+    }
+
+    @Override
+    public LivreDTO update(String isbn, LivreDTO dto) {
+        Livre existingLivre = livreRepository.findById(isbn)
+                .orElseThrow(() ->
+                        new DataNotFound("Livre", isbn)
+                );
+
+        Livre updatedLivre = livreMapper.toEntity(dto);
+
+        updatedLivre.setIsbn(existingLivre.getIsbn());
+
+        Livre savedLivre = livreRepository.save(updatedLivre);
+
+        return livreMapper.toDTO(savedLivre);
+    }
+
+    @Override
+    public void delete(String isbn) {
+
+            Livre livre = livreRepository.findById(isbn)
+                    .orElseThrow(() ->
+                            new DataNotFound("Livre", isbn)
+                    );
+
+            /**
+            Potentiellement voir pour ajouter une vérification sur les emprunts
+             */
+
+            livreRepository.delete(livre);
+        }
+    }
