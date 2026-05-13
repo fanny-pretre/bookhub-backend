@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/books")
 public class LivreRestController {
@@ -18,6 +20,16 @@ public class LivreRestController {
 
     public LivreRestController(LivreService livreService) {
         this.livreService = livreService;
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<LivreDTO>>> findAllLivres() {
+
+        List<LivreDTO> livres = livreService.getAllLivres();
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "ok", livres)
+        );
     }
 
     @GetMapping("/{isbn}")
@@ -37,4 +49,6 @@ public class LivreRestController {
             );
         }
     }
+
+
 }
