@@ -1,4 +1,4 @@
-package fr.eni.bookhubbackend.exception;
+package fr.eni.bookhubbackend.exceptions;
 
 public class EmailUtilisateurAlreadyExistsException extends RuntimeException{
 }

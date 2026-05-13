@@ -11,16 +11,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterDto {
-
-    @NotBlank(message = "Le nom est obligatoire")
-    private String nom;
-
-    @NotBlank(message = "Le prénom est obligatoire")
-    private String prenom;
+public class LoginDto {
 
     @NotBlank(message = "L'email est obligatoire")
-    @Email(message = "Adresse email invalide")
+    @Email(message = "L'email doit être valide")
     private String email;
 
     @NotBlank(message = "Le mot de passe est obligatoire")

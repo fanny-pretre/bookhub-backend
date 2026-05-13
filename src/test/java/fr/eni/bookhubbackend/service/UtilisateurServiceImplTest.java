@@ -3,7 +3,7 @@ package fr.eni.bookhubbackend.service;
 import fr.eni.bookhubbackend.dto.RegisterDto;
 import fr.eni.bookhubbackend.entity.Role;
 import fr.eni.bookhubbackend.entity.Utilisateur;
-import fr.eni.bookhubbackend.exception.EmailUtilisateurAlreadyExistsException;
+import fr.eni.bookhubbackend.exceptions.EmailUtilisateurAlreadyExistsException;
 import fr.eni.bookhubbackend.repository.RoleRepository;
 import fr.eni.bookhubbackend.repository.UtilisateurRepository;
 import org.junit.jupiter.api.BeforeEach;
