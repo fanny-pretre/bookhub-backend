@@ -1,13 +1,13 @@
 package fr.eni.bookhubbackend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="ROLE")
 public class Role {
@@ -16,6 +16,6 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "typeRole", nullable = false, length = 50)
+    @Column(name = "type_role", nullable = false, length = 50)
     private String typeRole;
 }

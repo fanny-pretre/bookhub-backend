@@ -1,13 +1,14 @@
 package fr.eni.bookhubbackend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="UTILISATEUR")
 public class Utilisateur {
@@ -29,6 +30,6 @@ public class Utilisateur {
     private String mdp;
 
     @ManyToOne
-    @JoinColumn(name = "idRole", nullable = false)
+    @JoinColumn(name = "id_role", nullable = false)
     private Role role;
 }

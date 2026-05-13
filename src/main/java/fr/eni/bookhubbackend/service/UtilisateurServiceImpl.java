@@ -1,7 +1,6 @@
 package fr.eni.bookhubbackend.service;
 
 import fr.eni.bookhubbackend.dto.RegisterDto;
-import fr.eni.bookhubbackend.dto.UtilisateurDto;
 import fr.eni.bookhubbackend.entity.Role;
 import fr.eni.bookhubbackend.entity.Utilisateur;
 import fr.eni.bookhubbackend.exception.EmailUtilisateurAlreadyExistsException;
@@ -38,12 +37,12 @@ public class UtilisateurServiceImpl implements UtilisateurService  {
         Utilisateur utilisateur = new Utilisateur();
         BeanUtils.copyProperties(registerDto, utilisateur);
 
-        utilisateur.setMdp((passwordEncoder.encode(registerDto.getMdp())));
+        utilisateur.setMdp(passwordEncoder.encode(registerDto.getMdp()));
 
         Role roleUser = roleRepository.findById(ID_ROLE_USER)
                 .orElseThrow();
 
-        utilisateur.setId(roleUser);
+        utilisateur.setRole(roleUser);
 
         try {
             return utilisateurRepository.save(utilisateur);
