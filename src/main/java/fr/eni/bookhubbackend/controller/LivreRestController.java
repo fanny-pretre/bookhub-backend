@@ -5,10 +5,7 @@ import fr.eni.bookhubbackend.exceptions.DataNotFound;
 import fr.eni.bookhubbackend.service.LivreService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -47,6 +44,62 @@ public class LivreRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new ApiResponse<>(false, "Livre : " + isbn + " non trouvé", null)
             );
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<LivreDTO>> create(@RequestBody LivreDTO dto) {
+
+        try {
+            LivreDTO createdLivre = livreService.create(dto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ApiResponse<>(true, "Livre créé avec succès", createdLivre));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(false, "Erreur lors de la création du livre", null));
+        }
+    }
+
+    @PutMapping("/{isbn}")
+    public ResponseEntity<ApiResponse<LivreDTO>> update(@PathVariable String isbn, @RequestBody LivreDTO dto) {
+
+        try {
+            LivreDTO updatedLivre = livreService.update(isbn, dto);
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Livre mis à jour avec succès", updatedLivre)
+            );
+
+        } catch (DataNotFound e) {
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(false, "Livre : " + isbn + " non trouvé", null));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(false, "Erreur lors de la mise à jour", null));
+        }
+    }
+
+    @DeleteMapping("/{isbn}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable String isbn) {
+
+        try {
+            livreService.delete(isbn);
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Livre supprimé avec succès", null));
+
+        } catch (DataNotFound e) {
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(false, "Livre : " + isbn + " non trouvé", null));
+
+        } catch (IllegalStateException e) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(false, e.getMessage(), null));
         }
     }
 
