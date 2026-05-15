@@ -10,6 +10,11 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -23,16 +28,46 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable())
+
+                // Active CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // Règles de sécurité
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/**").authenticated()
+                        .requestMatchers("/api/books/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+                // Filtre JWT
+                .addFilterBefore(
+                        jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        // Autorise les requêtes venant du front Angular en développement
+        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        // Méthodes HTTP autorisées
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // Autorise tous les headers (dont Authorization pour le JWT plus tard)
+        config.setAllowedHeaders(List.of("*"));
+        // Autorise l'envoi des cookies et du token JWT
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Applique cette config à toutes les routes /api/**
+        source.registerCorsConfiguration("/api/**", config);
+        return source;
     }
 
     @Bean
@@ -41,6 +76,7 @@ public class WebSecurityConfig {
         //return NoOpPasswordEncoder.getInstance(); //sans gestion du chiffrement
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager (AuthenticationConfiguration configuration) throws Exception {
