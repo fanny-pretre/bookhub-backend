@@ -1,9 +1,10 @@
 package fr.eni.bookhubbackend.service;
 
-import fr.eni.bookhubbackend.dto.LoginDto;
-import fr.eni.bookhubbackend.dto.LoginResponseDto;
+import fr.eni.bookhubbackend.dto.authentificationDto.LoginDto;
+import fr.eni.bookhubbackend.dto.authentificationDto.LoginResponseDto;
 import fr.eni.bookhubbackend.entity.Utilisateur;
 import fr.eni.bookhubbackend.exceptions.AuthException;
+import fr.eni.bookhubbackend.exceptions.UtilisateurNotFoundException;
 import fr.eni.bookhubbackend.repository.UtilisateurRepository;
 import fr.eni.bookhubbackend.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +26,7 @@ public class AuthentificationServiceImpl implements AuthentificationService {
     @Override
     public LoginResponseDto login(LoginDto loginDto) {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(() -> new AuthException("Email ou mot de passe incorrect"));
+                .orElseThrow(UtilisateurNotFoundException::new);
 
         boolean mdpOk = passwordEncoder.matches(
                 loginDto.getMdp(),

@@ -1,15 +1,22 @@
 package fr.eni.bookhubbackend.service;
 
-import fr.eni.bookhubbackend.dto.RegisterDto;
+import fr.eni.bookhubbackend.dto.utilisateurDto.ProfilDto;
+import fr.eni.bookhubbackend.dto.utilisateurDto.RegisterDto;
+import fr.eni.bookhubbackend.dto.utilisateurDto.UpdateMdpDto;
+import fr.eni.bookhubbackend.dto.utilisateurDto.UpdateProfilDto;
 import fr.eni.bookhubbackend.entity.Role;
 import fr.eni.bookhubbackend.entity.Utilisateur;
+import fr.eni.bookhubbackend.exceptions.AuthException;
 import fr.eni.bookhubbackend.exceptions.EmailUtilisateurAlreadyExistsException;
 import fr.eni.bookhubbackend.repository.RoleRepository;
 import fr.eni.bookhubbackend.repository.UtilisateurRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import org.springframework.security.access.AccessDeniedException;
 
 
 @Service
@@ -50,4 +57,84 @@ public class UtilisateurServiceImpl implements UtilisateurService  {
             throw new EmailUtilisateurAlreadyExistsException();
         }
     }
+
+    @Override
+    public void verifierAccesUtilisateur(Integer id, Authentication authentication) {
+        String email = authentication.getName();
+
+        Utilisateur utilisateurConnecte = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new AuthException("Aucun utilisateur trouvé"));
+
+        if (!utilisateurConnecte.getId().equals(id)) {
+            throw new AccessDeniedException("Accès interdit à ce profil");
+        }
+    }
+
+    @Override
+    public ProfilDto getProfilById(Integer id) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new AuthException("Utilisateur introuvable"));
+
+        return new ProfilDto(
+                utilisateur.getId(),
+                utilisateur.getNom(),
+                utilisateur.getPrenom(),
+                utilisateur.getEmail(),
+                utilisateur.getTelephone()
+        );
+    }
+
+    @Override
+    public void modifierProfil(Integer id, UpdateProfilDto updateProfilDto) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new AuthException("Utilisateur introuvable"));
+
+        boolean emailModifie = !utilisateur.getEmail().equals(updateProfilDto.getEmail());
+
+        if (emailModifie && utilisateurRepository.existsByEmail(updateProfilDto.getEmail())) {
+            throw new EmailUtilisateurAlreadyExistsException();
+        }
+
+        utilisateur.setNom(updateProfilDto.getNom());
+        utilisateur.setPrenom(updateProfilDto.getPrenom());
+        utilisateur.setTelephone(updateProfilDto.getTelephone());
+
+        try {
+            utilisateurRepository.save(utilisateur);
+        } catch (DataIntegrityViolationException ex) {
+            throw new EmailUtilisateurAlreadyExistsException();
+        }
+    }
+
+    @Override
+    public void updateMotDePasse(Integer id, UpdateMdpDto updateMdpDto) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new AuthException("Utilisateur introuvable"));
+
+        if (!passwordEncoder.matches(updateMdpDto.getOldPassword(), utilisateur.getMdp())) {
+            throw new AuthException("Ancien mot de passe incorrect");
+        }
+
+        if (!updateMdpDto.getNewPassword().equals(updateMdpDto.getConfirmPassword())) {
+            throw new AuthException("Les mots de passe ne correspondent pas");
+        }
+
+        utilisateur.setMdp(
+                passwordEncoder.encode(updateMdpDto.getNewPassword())
+        );
+
+        utilisateurRepository.save(utilisateur);
+
+    }
+
+    @Override
+    public void deleteCompte(Integer id) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new AuthException("Utilisateur introuvable"));
+
+        utilisateurRepository.delete(utilisateur);
+
+    }
+
+
 }
