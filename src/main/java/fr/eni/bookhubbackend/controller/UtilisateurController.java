@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:4200")
 public class UtilisateurController {
 
     private final UtilisateurService utilisateurService;
@@ -46,13 +46,13 @@ public class UtilisateurController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponseDto>> login (@Valid @RequestBody LoginDto loginDto) {
         try {
-            authentificationService.login(loginDto);
-            ApiResponse<LoginResponseDto> apiResponse = new ApiResponse<>(true, "Connexion réussie, bravo BG", null);
 
+            LoginResponseDto loginResponseDto = authentificationService.login(loginDto);
+            ApiResponse<LoginResponseDto> apiResponse = new ApiResponse<>(true, "Connexion réussie, bravo BG", loginResponseDto);
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
         } catch (AuthException e) {
             ApiResponse<LoginResponseDto> apiResponse = new ApiResponse<>(false, "L'email et le mot de passe ne correspondent pas", null);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         }
 
     }
