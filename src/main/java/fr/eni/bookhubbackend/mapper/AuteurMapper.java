@@ -13,6 +13,7 @@ public class AuteurMapper {
         AuteurDTO dto = new AuteurDTO();
         dto.setId(auteur.getId());
         dto.setNom(auteur.getNom());
+        dto.setPrenom(auteur.getPrenom());
 
         return dto;
     }
@@ -23,6 +24,7 @@ public class AuteurMapper {
         Auteur auteur = new Auteur();
         auteur.setId(dto.getId());
         auteur.setNom(dto.getNom());
+        auteur.setPrenom(dto.getPrenom());
 
         return auteur;
     }

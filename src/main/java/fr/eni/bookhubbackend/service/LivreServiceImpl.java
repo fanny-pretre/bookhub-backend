@@ -7,6 +7,10 @@ import fr.eni.bookhubbackend.mapper.LivreMapper;
 import fr.eni.bookhubbackend.repository.LivreRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -74,4 +78,30 @@ public class LivreServiceImpl implements LivreService {
 
             livreRepository.delete(livre);
         }
+
+    @Override
+    public Page<LivreDTO> search(String search, String category, Boolean available, int page, String sort) {
+        Sort sortConfig = parseSort(sort);
+
+        Pageable pageable = PageRequest.of(page, 20, sortConfig);
+
+        return livreRepository.searchBooks(search, category, available, pageable)
+                .map(livreMapper::toDTO);
     }
+
+    private Sort parseSort(String sort) {
+
+        if (sort == null) return Sort.by("titre").ascending();
+
+        return switch (sort) {
+
+            case "title,desc" -> Sort.by("titre").descending();
+            case "title,asc" -> Sort.by("titre").ascending();
+
+            case "date,desc" -> Sort.by("dateAjout").descending();
+            case "date,asc" -> Sort.by("dateAjout").ascending();
+
+            default -> Sort.by("titre").ascending();
+        };
+    }
+}
