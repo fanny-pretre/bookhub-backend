@@ -7,8 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/books")
@@ -50,13 +55,29 @@ public class LivreRestController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<LivreDTO>> create(@RequestBody LivreDTO dto) {
-
+    public ResponseEntity<ApiResponse<LivreDTO>> create(
+            @RequestPart("livre") LivreDTO dto,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
         try {
+
+            if (file != null && !file.isEmpty()) {
+                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+                Path path = Paths.get("uploads/" + fileName);
+                Files.createDirectories(path.getParent());
+                Files.copy(file.getInputStream(), path);
+
+                dto.setCouverture("/uploads/" + fileName);
+            }
+
             LivreDTO createdLivre = livreService.create(dto);
+
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponse<>(true, "Livre créé avec succès", createdLivre));
+
         } catch (Exception e) {
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponse<>(false, "Erreur lors de la création du livre", null));
         }

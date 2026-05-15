@@ -49,6 +49,10 @@ public class LivreServiceImpl implements LivreService {
 
         Livre livre = livreMapper.toEntity(dto);
 
+        if (livre.getDateAjout() == null) {
+            livre.setDateAjout(java.time.LocalDate.now());
+        }
+
         Livre saved = livreRepository.save(livre);
 
         return livreMapper.toDTO(saved);
