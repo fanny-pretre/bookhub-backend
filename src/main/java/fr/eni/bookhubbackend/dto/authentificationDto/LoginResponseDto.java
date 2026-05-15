@@ -1,4 +1,4 @@
-package fr.eni.bookhubbackend.dto;
+package fr.eni.bookhubbackend.dto.authentificationDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package fr.eni.bookhubbackend.dto;
+package fr.eni.bookhubbackend.dto.utilisateurDto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
