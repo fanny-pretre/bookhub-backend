@@ -41,6 +41,12 @@ public class LivreServiceImpl implements LivreService {
 
     @Override
     public LivreDTO create(LivreDTO dto) {
+        if (livreRepository.existsByIsbn(dto.getIsbn())) {
+            throw new RuntimeException(
+                    "Un livre avec l'ISBN " + dto.getIsbn() + " existe déjà."
+            );
+        }
+
         Livre livre = livreMapper.toEntity(dto);
 
         Livre saved = livreRepository.save(livre);
