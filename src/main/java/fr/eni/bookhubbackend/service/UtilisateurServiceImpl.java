@@ -98,6 +98,7 @@ public class UtilisateurServiceImpl implements UtilisateurService  {
         utilisateur.setNom(updateProfilDto.getNom());
         utilisateur.setPrenom(updateProfilDto.getPrenom());
         utilisateur.setTelephone(updateProfilDto.getTelephone());
+        utilisateur.setEmail(updateProfilDto.getEmail());
 
         try {
             utilisateurRepository.save(utilisateur);
