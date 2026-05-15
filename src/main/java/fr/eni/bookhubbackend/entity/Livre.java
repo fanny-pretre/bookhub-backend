@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -22,7 +23,6 @@ public class Livre {
     @Column(nullable = false, length = 255)
     private String titre;
 
-    @Column(length = 255)
     private String couverture;
 
     @Column(columnDefinition = "TEXT")
@@ -44,5 +44,11 @@ public class Livre {
             joinColumns = @JoinColumn(name = "isbn"),
             inverseJoinColumns = @JoinColumn(name = "id_categorie")
     )
-    private List<Categorie> categories;
+    private List<Categorie> categories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "livre")
+    private List<Emprunt> emprunts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "livre")
+    private List<Reservation> reservations = new ArrayList<>();
 }

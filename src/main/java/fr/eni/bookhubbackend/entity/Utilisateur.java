@@ -6,7 +6,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -39,4 +41,10 @@ public class Utilisateur {
     @ManyToOne
     @JoinColumn(name = "id_role", nullable = false)
     private Role role;
+
+    @OneToMany(mappedBy = "utilisateur")
+    private List<Emprunt> emprunts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "utilisateur")
+    private List<Reservation> reservations = new ArrayList<>();
 }
