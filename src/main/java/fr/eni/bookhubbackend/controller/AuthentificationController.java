@@ -6,8 +6,10 @@ import fr.eni.bookhubbackend.dto.utilisateurDto.RegisterDto;
 import fr.eni.bookhubbackend.exceptions.AuthException;
 import fr.eni.bookhubbackend.exceptions.EmailUtilisateurAlreadyExistsException;
 import fr.eni.bookhubbackend.exceptions.UtilisateurNotFoundException;
+import fr.eni.bookhubbackend.security.TokenBlacklistService;
 import fr.eni.bookhubbackend.service.AuthentificationService;
 import fr.eni.bookhubbackend.service.UtilisateurService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,16 +17,17 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200")
 public class AuthentificationController {
 
     private final UtilisateurService utilisateurService;
     private final AuthentificationService authentificationService;
+    private final TokenBlacklistService tokenBlacklistService;
 
 
-    public AuthentificationController(UtilisateurService utilisateurService, AuthentificationService authentificationService) {
+    public AuthentificationController(UtilisateurService utilisateurService, AuthentificationService authentificationService, TokenBlacklistService tokenBlacklistService) {
         this.utilisateurService = utilisateurService;
         this.authentificationService = authentificationService;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @PostMapping("/register")
@@ -52,17 +55,26 @@ public class AuthentificationController {
             ApiResponse<LoginResponseDto> apiResponse = new ApiResponse<>(true, "Connexion réussie, bravo BG", loginResponseDto);
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
 
-        } catch (UtilisateurNotFoundException e) {
-            ApiResponse<LoginResponseDto> apiResponse =
-                    new ApiResponse<>(false, e.getMessage(), null);
-
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
-
-        } catch (AuthException e) {
-            ApiResponse<LoginResponseDto> apiResponse = new ApiResponse<>(false, "L'email et le mot de passe ne correspondent pas", null);
+        } catch (AuthException | UtilisateurNotFoundException e) {
+            ApiResponse<LoginResponseDto> apiResponse = new ApiResponse<>(false, "L'email ou mot de passe incorrect", null);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         }
 
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(false, "Aucun token fourni", null));
+        }
+
+        String token = authHeader.substring(7);
+        tokenBlacklistService.blacklist(token);
+
+        return ResponseEntity.ok(new ApiResponse<>(true, "Déconnexion réussie", null));
     }
 
 

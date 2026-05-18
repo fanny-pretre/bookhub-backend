@@ -4,8 +4,12 @@ import fr.eni.bookhubbackend.dto.EmpruntResponseDTO;
 import fr.eni.bookhubbackend.dto.EmpruntDTO;
 import fr.eni.bookhubbackend.exceptions.DataNotFound;
 import fr.eni.bookhubbackend.service.EmpruntService;
+import fr.eni.bookhubbackend.service.UtilisateurService;
+import jakarta.persistence.Access;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,9 +18,11 @@ import java.util.List;
 @RequestMapping("/api/loans")
 public class EmpruntRestController {
     private final EmpruntService empruntService;
+    private final UtilisateurService utilisateurService;
 
-    public EmpruntRestController(EmpruntService empruntService) {
+    public EmpruntRestController(EmpruntService empruntService, UtilisateurService utilisateurService) {
         this.empruntService = empruntService;
+        this.utilisateurService = utilisateurService;
     }
 
     @GetMapping
@@ -45,9 +51,10 @@ public class EmpruntRestController {
     }
 
     @GetMapping("/my/{userId}")
-    public ResponseEntity<ApiResponse<List<EmpruntResponseDTO>>> getLoansByUser(@PathVariable Integer userId) {
+    public ResponseEntity<ApiResponse<List<EmpruntResponseDTO>>> getLoansByUser(@PathVariable Integer userId, Authentication authentication) {
 
         try {
+            utilisateurService.verifierAccesUtilisateur(userId, authentication);
             List<EmpruntResponseDTO> loans = empruntService.getLoansByUser(userId);
 
             return ResponseEntity.ok(
@@ -58,7 +65,10 @@ public class EmpruntRestController {
                     )
             );
 
-        } catch (Exception e) {
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(false, "Accès interdit aux emprunts d'un autre utilisateur", null));
+        }catch (Exception e) {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponse<>(

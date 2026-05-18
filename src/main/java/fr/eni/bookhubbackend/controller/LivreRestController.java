@@ -3,6 +3,7 @@ package fr.eni.bookhubbackend.controller;
 import fr.eni.bookhubbackend.dto.LivreDTO;
 import fr.eni.bookhubbackend.exceptions.DataNotFound;
 import fr.eni.bookhubbackend.service.LivreService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
-@CrossOrigin(origins = "http://localhost:4200")
 public class LivreRestController {
 
     private final LivreService livreService;
@@ -50,7 +50,7 @@ public class LivreRestController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<LivreDTO>> create(@RequestBody LivreDTO dto) {
+    public ResponseEntity<ApiResponse<LivreDTO>> create(@Valid @RequestBody LivreDTO dto) {
 
         try {
             LivreDTO createdLivre = livreService.create(dto);
@@ -63,7 +63,7 @@ public class LivreRestController {
     }
 
     @PutMapping("/{isbn}")
-    public ResponseEntity<ApiResponse<LivreDTO>> update(@PathVariable String isbn, @RequestBody LivreDTO dto) {
+    public ResponseEntity<ApiResponse<LivreDTO>> update(@PathVariable String isbn, @Valid @RequestBody LivreDTO dto) {
 
         try {
             LivreDTO updatedLivre = livreService.update(isbn, dto);

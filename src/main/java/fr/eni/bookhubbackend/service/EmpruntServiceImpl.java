@@ -33,6 +33,9 @@ import java.util.List;
         private final StatutRepository statutRepository;
         private final EmpruntMapper empruntMapper;
 
+        private final Integer STATUT_RETOURNE = 1;
+        private final Integer STATUT_ENCOURS = 2;
+
 
     @Override
     public List<EmpruntResponseDTO> getAllEmprunts() {
@@ -52,6 +55,7 @@ import java.util.List;
 
     @Override
     public List<EmpruntResponseDTO> getLoansByUser(Integer userId) {
+
         return empruntRepository.findByUtilisateurId(userId)
                 .stream()
                 .map(empruntMapper::toDTO)
@@ -92,7 +96,7 @@ import java.util.List;
             throw new LateLoanException();
         }
 
-        Statut statut = statutRepository.findById(1)
+        Statut statut = statutRepository.findById(STATUT_ENCOURS)
                 .orElseThrow(() -> new RuntimeException("Statut introuvable"));
 
         Emprunt emprunt = new Emprunt();
@@ -124,6 +128,10 @@ import java.util.List;
         }
 
         emprunt.setDateRetourEffective(LocalDate.now());
+
+        Statut statutRetourne = statutRepository.findById(STATUT_RETOURNE)
+                .orElseThrow(() -> new RuntimeException("Statut introuvable"));
+        emprunt.setStatut(statutRetourne);
 
         Livre livre = emprunt.getLivre();
         livre.setDisponibilite(true);

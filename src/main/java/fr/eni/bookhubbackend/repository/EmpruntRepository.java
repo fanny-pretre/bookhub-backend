@@ -13,6 +13,8 @@ public interface EmpruntRepository extends JpaRepository<Emprunt, Integer> {
 
     long countByUtilisateurIdAndDateRetourEffectiveIsNull(Integer utilisateurId);
 
+    boolean existsByLivre_IsbnAndStatut_StatutNot(String isbn, Integer idStatut);
+
     boolean existsByUtilisateurIdAndDateRetourPrevueBeforeAndDateRetourEffectiveIsNull(
             Integer utilisateurId,
             LocalDate date

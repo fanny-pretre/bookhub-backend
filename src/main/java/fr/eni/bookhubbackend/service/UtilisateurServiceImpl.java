@@ -27,6 +27,8 @@ public class UtilisateurServiceImpl implements UtilisateurService  {
     private final PasswordEncoder passwordEncoder;
 
     private static final Integer ID_ROLE_USER = 1;
+    private static final String PASSWORD_REGEX =
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
 
     public UtilisateurServiceImpl(UtilisateurRepository utilisateurRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.utilisateurRepository = utilisateurRepository;
@@ -114,6 +116,10 @@ public class UtilisateurServiceImpl implements UtilisateurService  {
 
         if (!passwordEncoder.matches(updateMdpDto.getOldPassword(), utilisateur.getMdp())) {
             throw new AuthException("Ancien mot de passe incorrect");
+        }
+
+        if (!updateMdpDto.getNewPassword().matches(PASSWORD_REGEX)) {
+            throw new AuthException("Le mot de passe ne respecte pas la politique de sécurité");
         }
 
         if (!updateMdpDto.getNewPassword().equals(updateMdpDto.getConfirmPassword())) {

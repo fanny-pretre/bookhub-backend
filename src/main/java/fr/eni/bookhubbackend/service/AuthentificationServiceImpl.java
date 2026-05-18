@@ -38,9 +38,10 @@ public class AuthentificationServiceImpl implements AuthentificationService {
         }
 
         String role = utilisateur.getRole().getTypeRole();
+        Integer id = utilisateur.getId();
 
         String token = jwtService.generateToken(utilisateur.getEmail(), role);
 
-        return new LoginResponseDto(token, role, "Connexion réussie");
+        return new LoginResponseDto(token, role, "Connexion réussie", id);
     }
 }
