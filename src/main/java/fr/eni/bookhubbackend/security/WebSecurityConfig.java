@@ -2,10 +2,12 @@ package fr.eni.bookhubbackend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -32,15 +34,47 @@ public class WebSecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
 
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
                 // Active CORS
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 // Règles de sécurité
                 .authorizeHttpRequests(auth -> auth
+
+                        // AUTH
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/users/**").authenticated()
-                        .requestMatchers("/api/books/**").permitAll()
+
+                        // SWAGGER
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+
+                        // LIVRES
+                        .requestMatchers(HttpMethod.GET, "/api/books", "/api/books/{id}", "/api/books/search").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/books").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/books/{isbn}").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/books/{isbn}").hasAnyRole("LIBRARIAN", "ADMIN")
+
+                        // EMPRUNTS
+                        .requestMatchers(HttpMethod.GET, "/api/loans/my/{userId}").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/loans").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/loans/{id}").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/loans").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/loans/{id}/return").hasAnyRole("LIBRARIAN", "ADMIN")
+
+                        // RÉSERVATIONS
+                        .requestMatchers(HttpMethod.GET, "/api/reservations").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reservations/{id}").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reservations/my").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/reservations").authenticated().requestMatchers(HttpMethod.DELETE, "/api/reservations/{id}").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/reservations/{id}/validate").hasAnyRole("LIBRARIAN", "ADMIN")
+
+                        // UTILISATEURS
+                        .requestMatchers("/api/users/{id}").authenticated()
+                        .requestMatchers("/api/users/{id}/password").authenticated()
+
+                        // PAR DEFAUT
                         .anyRequest().authenticated()
                 )
 

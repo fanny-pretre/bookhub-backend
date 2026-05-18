@@ -4,6 +4,7 @@ import fr.eni.bookhubbackend.dto.LivreDTO;
 import fr.eni.bookhubbackend.entity.Livre;
 import fr.eni.bookhubbackend.exceptions.DataNotFound;
 import fr.eni.bookhubbackend.mapper.LivreMapper;
+import fr.eni.bookhubbackend.repository.EmpruntRepository;
 import fr.eni.bookhubbackend.repository.LivreRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -21,6 +22,9 @@ public class LivreServiceImpl implements LivreService {
     @NonNull
     private LivreRepository livreRepository;
     private LivreMapper livreMapper;
+    private EmpruntRepository empruntRepository;
+
+    private final Integer STATUT_RETOURNE = 1;
 
     @Override
     public List<LivreDTO> getAllLivres() {
@@ -78,9 +82,11 @@ public class LivreServiceImpl implements LivreService {
                             new DataNotFound("Livre", isbn)
                     );
 
-            /**
-            Potentiellement voir pour ajouter une vérification sur les emprunts
-             */
+            boolean hasEmpruntsActifs = empruntRepository.existsByLivre_IsbnAndStatut_StatutNot(isbn, STATUT_RETOURNE);
+
+            if(hasEmpruntsActifs) {
+                throw new IllegalStateException("Impossible de supprimer un livre avec des emprunts en cours");
+            }
 
             livreRepository.delete(livre);
         }

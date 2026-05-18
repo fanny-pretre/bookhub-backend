@@ -19,13 +19,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final BookhubUserDetailsService userDetailsService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     public JwtAuthenticationFilter(
             JwtService jwtService,
-            BookhubUserDetailsService userDetailsService
+            BookhubUserDetailsService userDetailsService, TokenBlacklistService tokenBlacklistService
     ) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @Override
@@ -43,6 +45,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authorizationHeader.substring(7);
+
+        if (tokenBlacklistService.isBlacklisted(token)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token invalidé");
+            return;
+        }
 
         if (!jwtService.validateToken(token)) {
             filterChain.doFilter(request, response);
