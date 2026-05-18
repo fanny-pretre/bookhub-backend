@@ -51,7 +51,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (!jwtService.validateToken(token)) {
+        boolean isValid = jwtService.validateToken(token);
+
+        if (!isValid) {
             filterChain.doFilter(request, response);
             return;
         }

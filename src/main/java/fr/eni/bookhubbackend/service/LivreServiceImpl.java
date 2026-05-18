@@ -94,10 +94,12 @@ public class LivreServiceImpl implements LivreService {
     @Override
     public Page<LivreDTO> search(String search, String category, Boolean available, int page, String sort) {
         Sort sortConfig = parseSort(sort);
-
         Pageable pageable = PageRequest.of(page, 20, sortConfig);
 
-        return livreRepository.searchBooks(search, category, available, pageable)
+        String normalizedSearch = (search != null && !search.isBlank()) ? search : null;
+        String normalizedCategory = (category != null && !category.isBlank()) ? category : null;
+
+        return livreRepository.searchBooks(normalizedSearch, normalizedCategory, available, pageable)
                 .map(livreMapper::toDTO);
     }
 
