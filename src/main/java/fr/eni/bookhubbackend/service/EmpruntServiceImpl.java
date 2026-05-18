@@ -1,7 +1,7 @@
 package fr.eni.bookhubbackend.service;
 
-import fr.eni.bookhubbackend.dto.EmpruntResponseDTO;
 import fr.eni.bookhubbackend.dto.EmpruntDTO;
+import fr.eni.bookhubbackend.dto.EmpruntResponseDTO;
 import fr.eni.bookhubbackend.entity.Emprunt;
 import fr.eni.bookhubbackend.entity.Livre;
 import fr.eni.bookhubbackend.entity.Statut;
@@ -11,10 +11,7 @@ import fr.eni.bookhubbackend.exceptions.LateLoanException;
 import fr.eni.bookhubbackend.exceptions.LivreIndisponibleException;
 import fr.eni.bookhubbackend.exceptions.LoanLimitExceededException;
 import fr.eni.bookhubbackend.mapper.EmpruntMapper;
-import fr.eni.bookhubbackend.repository.EmpruntRepository;
-import fr.eni.bookhubbackend.repository.LivreRepository;
-import fr.eni.bookhubbackend.repository.StatutRepository;
-import fr.eni.bookhubbackend.repository.UtilisateurRepository;
+import fr.eni.bookhubbackend.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +28,7 @@ import java.util.List;
         private final LivreRepository livreRepository;
         private final UtilisateurRepository utilisateurRepository;
         private final StatutRepository statutRepository;
+        private final ReservationRepository reservationRepository;
         private final EmpruntMapper empruntMapper;
 
         private final Integer STATUT_RETOURNE = 1;

@@ -16,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/loans")
+@CrossOrigin(origins = "http://localhost:4200")
 public class EmpruntRestController {
     private final EmpruntService empruntService;
     private final UtilisateurService utilisateurService;
