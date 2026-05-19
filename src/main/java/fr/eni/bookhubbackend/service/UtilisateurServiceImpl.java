@@ -10,6 +10,7 @@ import fr.eni.bookhubbackend.exceptions.AuthException;
 import fr.eni.bookhubbackend.exceptions.EmailUtilisateurAlreadyExistsException;
 import fr.eni.bookhubbackend.repository.RoleRepository;
 import fr.eni.bookhubbackend.repository.UtilisateurRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -36,6 +37,7 @@ public class UtilisateurServiceImpl implements UtilisateurService  {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     @Override
     public Utilisateur creerUtilisateur(RegisterDto registerDto) {
 
@@ -86,6 +88,7 @@ public class UtilisateurServiceImpl implements UtilisateurService  {
         );
     }
 
+    @Transactional
     @Override
     public void modifierProfil(Integer id, UpdateProfilDto updateProfilDto) {
         Utilisateur utilisateur = utilisateurRepository.findById(id)
@@ -109,6 +112,7 @@ public class UtilisateurServiceImpl implements UtilisateurService  {
         }
     }
 
+    @Transactional
     @Override
     public void updateMotDePasse(Integer id, UpdateMdpDto updateMdpDto) {
         Utilisateur utilisateur = utilisateurRepository.findById(id)
@@ -134,6 +138,7 @@ public class UtilisateurServiceImpl implements UtilisateurService  {
 
     }
 
+    @Transactional
     @Override
     public void deleteCompte(Integer id) {
         Utilisateur utilisateur = utilisateurRepository.findById(id)
