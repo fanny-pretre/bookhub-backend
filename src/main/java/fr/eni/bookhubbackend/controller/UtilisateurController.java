@@ -13,6 +13,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 public class UtilisateurController {
@@ -106,5 +108,20 @@ public class UtilisateurController {
 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         }
+    }
+
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ProfilDto>>> getAllUsers() {
+
+        List<ProfilDto> users = utilisateurService.getAllUsers();
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Utilisateurs récupérés",
+                        users
+                )
+        );
     }
 }

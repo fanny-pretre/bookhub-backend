@@ -7,6 +7,8 @@ import fr.eni.bookhubbackend.dto.utilisateurDto.UpdateProfilDto;
 import fr.eni.bookhubbackend.entity.Utilisateur;
 import org.springframework.security.core.Authentication;
 
+import java.util.List;
+
 public interface UtilisateurService {
 
     Utilisateur creerUtilisateur(RegisterDto registerDto);
@@ -20,5 +22,7 @@ public interface UtilisateurService {
     void updateMotDePasse (Integer id, UpdateMdpDto updateMdpDto);
 
     void deleteCompte (Integer id);
+
+    List<ProfilDto> getAllUsers();
 
 }
