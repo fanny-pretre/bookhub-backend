@@ -73,6 +73,7 @@ public class WebSecurityConfig {
                         // UTILISATEURS
                         .requestMatchers("/api/users/{id}").authenticated()
                         .requestMatchers("/api/users/{id}/password").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasAnyRole("LIBRARIAN", "ADMIN")
 
                         // PAR DEFAUT
                         .anyRequest().authenticated()

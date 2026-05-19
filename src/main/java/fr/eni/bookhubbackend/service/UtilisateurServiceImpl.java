@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.security.access.AccessDeniedException;
 
+import java.util.List;
+
 
 @Service
 public class UtilisateurServiceImpl implements UtilisateurService  {
@@ -146,6 +148,22 @@ public class UtilisateurServiceImpl implements UtilisateurService  {
 
         utilisateurRepository.delete(utilisateur);
 
+    }
+
+    public List<ProfilDto> getAllUsers() {
+
+        List<Utilisateur> utilisateurs =
+                utilisateurRepository.findAll();
+
+        return utilisateurs.stream()
+                .map(utilisateur -> new ProfilDto(
+                        utilisateur.getId(),
+                        utilisateur.getNom(),
+                        utilisateur.getPrenom(),
+                        utilisateur.getEmail(),
+                        utilisateur.getTelephone()
+                ))
+                .toList();
     }
 
 
