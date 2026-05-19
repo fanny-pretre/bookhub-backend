@@ -10,7 +10,6 @@ import fr.eni.bookhubbackend.repository.AuteurRepository;
 import fr.eni.bookhubbackend.repository.CategorieRepository;
 import fr.eni.bookhubbackend.repository.EmpruntRepository;
 import fr.eni.bookhubbackend.repository.LivreRepository;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -88,38 +86,18 @@ public class LivreServiceImpl implements LivreService {
     }
 
     @Override
-    @Transactional
     public LivreDTO update(String isbn, LivreDTO dto) {
-        // 1. Récupérer le livre existant
         Livre existingLivre = livreRepository.findById(isbn)
-                .orElseThrow(() -> new DataNotFound("Livre", isbn));
+                .orElseThrow(() ->
+                        new DataNotFound("Livre", isbn)
+                );
 
-        // 2. Mise à jour des champs simples
-        existingLivre.setTitre(dto.getTitre());
-        existingLivre.setDescription(dto.getDescription());
-        existingLivre.setCouverture(dto.getCouverture());
-        existingLivre.setDisponibilite(dto.getDisponibilite());
+        Livre updatedLivre = livreMapper.toEntity(dto);
 
-        // 3. Gestion de l'auteur
-        Auteur author = auteurRepository.findByNomAndPrenom(
-                dto.getAuteur().getNom(),
-                dto.getAuteur().getPrenom()
-        ).orElseThrow(() -> new DataNotFound("Auteur", dto.getAuteur().getNom()));
-        existingLivre.setAuteur(author);
+        updatedLivre.setIsbn(existingLivre.getIsbn());
 
-        // 4. Gestion des catégories (CORRECTION ICI)
-        if (dto.getCategories() != null) {
-            List<Categorie> categoriesPersistantes = dto.getCategories().stream()
-                    .map(c -> categorieRepository.findByTypeCategorie(c.getTypeCategorie())
-                            .orElseThrow(() -> new DataNotFound("Catégorie", c.getTypeCategorie())))
-                    .toList();
+        Livre savedLivre = livreRepository.save(updatedLivre);
 
-            // Au lieu de .clear() qui plante, on passe une nouvelle ArrayList modifiable
-            existingLivre.setCategories(new ArrayList<>(categoriesPersistantes));
-        }
-
-        // 5. Sauvegarde
-        Livre savedLivre = livreRepository.save(existingLivre);
         return livreMapper.toDTO(savedLivre);
     }
 
