@@ -99,10 +99,9 @@ public class LivreServiceImpl implements LivreService {
         existingLivre.setDisponibilite(dto.getDisponibilite());
 
         // 3. Gestion de l'auteur
-        Auteur author = auteurRepository.findByNomAndPrenom(
-                dto.getAuteur().getNom(),
-                dto.getAuteur().getPrenom()
-        ).orElseThrow(() -> new DataNotFound("Auteur", dto.getAuteur().getNom()));
+        Auteur author = auteurRepository.findById(dto.getAuteur().getId())
+                .orElseThrow(() -> new DataNotFound("Auteur", dto.getAuteur().getId()));
+
         existingLivre.setAuteur(author);
 
         // 4. Gestion des catégories (CORRECTION ICI)
