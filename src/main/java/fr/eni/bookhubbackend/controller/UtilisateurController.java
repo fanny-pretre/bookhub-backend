@@ -89,10 +89,8 @@ public class UtilisateurController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteCompte (@PathVariable Integer id,
-                                                           Authentication authentication) {
+    public ResponseEntity<ApiResponse<Void>> deleteCompte (@PathVariable Integer id) {
         try {
-            utilisateurService.verifierAccesUtilisateur(id, authentication);
             utilisateurService.deleteCompte(id);
 
             ApiResponse<Void> apiResponse = new ApiResponse<>(true, "Compte supprimé avec succès", null);
