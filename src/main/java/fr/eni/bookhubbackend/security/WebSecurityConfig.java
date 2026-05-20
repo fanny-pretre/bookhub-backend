@@ -64,16 +64,18 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/loans/{id}/return").hasAnyRole("LIBRARIAN", "ADMIN")
 
                         // RÉSERVATIONS
+                        .requestMatchers(HttpMethod.GET, "/api/reservations/my").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/reservations").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/reservations/{id}").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/reservations").hasAnyRole("LIBRARIAN", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/reservations/{id}").hasAnyRole("LIBRARIAN", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/reservations/my").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/reservations").authenticated().requestMatchers(HttpMethod.DELETE, "/api/reservations/{id}").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/reservations/{id}/validate").hasAnyRole("LIBRARIAN", "ADMIN")
 
                         // UTILISATEURS
                         .requestMatchers("/api/users/{id}").authenticated()
                         .requestMatchers("/api/users/{id}/password").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/users").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/{id}").hasAnyRole("LIBRARIAN", "ADMIN")
 
                         // PAR DEFAUT
                         .anyRequest().authenticated()
