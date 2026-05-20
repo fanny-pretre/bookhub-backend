@@ -61,10 +61,8 @@ public class LivreServiceImpl implements LivreService {
         Livre livre = livreMapper.toEntity(dto);
 
         // 2. RÉCUPÉRER L'AUTEUR RÉEL DEPUIS LA BDD
-        Auteur existingAuteur = auteurRepository.findByNomAndPrenom(
-                livre.getAuteur().getNom(),
-                livre.getAuteur().getPrenom()
-        ).orElseThrow(() -> new DataNotFound("Auteur non trouvé en base", null));
+        Auteur existingAuteur = auteurRepository.findById(dto.getAuteur().getId())
+                .orElseThrow(() -> new DataNotFound("Auteur", dto.getAuteur().getId()));
 
         // On remplace l'auteur "temporaire" par celui de la BDD qui possède un ID
         livre.setAuteur(existingAuteur);

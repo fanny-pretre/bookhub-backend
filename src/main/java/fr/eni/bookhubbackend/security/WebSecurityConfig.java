@@ -74,7 +74,7 @@ public class WebSecurityConfig {
                         // AUTEURS
                         .requestMatchers(HttpMethod.GET, "/api/auteurs").hasAnyRole("LIBRARIAN", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/auteurs").hasAnyRole("LIBRARIAN", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/auteurs").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/auteurs/{id}").hasAnyRole("LIBRARIAN", "ADMIN")
 
                         // UTILISATEURS
                         .requestMatchers("/api/users/{id}").authenticated()
