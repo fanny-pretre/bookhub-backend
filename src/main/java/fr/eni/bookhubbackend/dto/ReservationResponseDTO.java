@@ -24,4 +24,6 @@ public class ReservationResponseDTO {
     private String bookTitle;
 
     private LocalDate reservationDate;
+
+    private Integer idUtilisateur;
 }

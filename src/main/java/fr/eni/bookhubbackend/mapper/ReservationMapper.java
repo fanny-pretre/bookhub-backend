@@ -20,6 +20,7 @@ public class ReservationMapper {
         dto.setQueuePosition(reservation.getRang());
         dto.setReservationDate(reservation.getDateReservation());
         dto.setMessage("Réservation confirmée");
+        dto.setIdUtilisateur(reservation.getUtilisateur().getId());
 
         return dto;
     }
