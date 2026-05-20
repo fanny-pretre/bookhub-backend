@@ -71,6 +71,11 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/reservations/{id}").hasAnyRole("LIBRARIAN", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/reservations/{id}/validate").hasAnyRole("LIBRARIAN", "ADMIN")
 
+                        // AUTEURS
+                        .requestMatchers(HttpMethod.GET, "/api/auteurs").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/auteurs").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/auteurs").hasAnyRole("LIBRARIAN", "ADMIN")
+
                         // UTILISATEURS
                         .requestMatchers("/api/users/{id}").authenticated()
                         .requestMatchers("/api/users/{id}/password").authenticated()
