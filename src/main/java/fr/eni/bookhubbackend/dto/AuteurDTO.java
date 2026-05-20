@@ -12,9 +12,7 @@ public class AuteurDTO {
 
     private Long id;
 
-    @NotBlank(message = "Le nom de l'auteur est obligatoire")
     private String nom;
 
-    @NotBlank(message = "Le prénom de l'auteur est obligatoire")
     private String prenom;
 }
